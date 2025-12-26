@@ -1,19 +1,29 @@
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 import httpx
 
 from app.core.config import settings
 from app.core.logging import logger
+from app.core.clients import SharedClients
 
 
 class MCPClient:
     """Client for communicating with the MCP server."""
 
-    def __init__(self):
+    def __init__(self, client: Optional[httpx.AsyncClient] = None):
         self.base_url = settings.MCP_SERVER_URL
-        self.client = httpx.AsyncClient(timeout=60.0)
+        self._client = client
+        self._owns_client = client is None
+
+    @property
+    def client(self) -> httpx.AsyncClient:
+        if self._client is None:
+            return SharedClients.get_mcp_client()
+        return self._client
 
     async def close(self):
-        await self.client.aclose()
+        # Only close if we own the client (not using shared)
+        if self._owns_client and self._client is not None:
+            await self._client.aclose()
 
     async def get_available_tools(self) -> List[Dict[str, Any]]:
         """Get list of available tools from MCP server."""

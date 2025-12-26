@@ -3,19 +3,29 @@ import httpx
 import json
 
 from app.core.config import settings
+from app.core.clients import SharedClients
 
 
 class LLMClient:
     """OpenAI-compatible LLM client with streaming and tool support."""
 
-    def __init__(self):
+    def __init__(self, client: Optional[httpx.AsyncClient] = None):
         self.base_url = settings.LLM_API_BASE_URL
         self.api_key = settings.LLM_API_KEY
         self.model = settings.LLM_MODEL
-        self.client = httpx.AsyncClient(timeout=120.0)
+        self._client = client
+        self._owns_client = client is None
+
+    @property
+    def client(self) -> httpx.AsyncClient:
+        if self._client is None:
+            return SharedClients.get_llm_client()
+        return self._client
 
     async def close(self):
-        await self.client.aclose()
+        # Only close if we own the client (not using shared)
+        if self._owns_client and self._client is not None:
+            await self._client.aclose()
 
     async def stream_chat(
         self,

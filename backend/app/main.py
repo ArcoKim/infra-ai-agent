@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 
 from app.core.config import settings
 from app.core.logging import logger
+from app.core.clients import SharedClients
 from app.api.v1.router import api_router
 
 
@@ -11,9 +12,13 @@ from app.api.v1.router import api_router
 async def lifespan(app: FastAPI):
     # Startup
     logger.info(f"Starting {settings.APP_NAME}...")
+    await SharedClients.startup()
+    logger.info("Shared HTTP clients initialized")
     yield
     # Shutdown
     logger.info(f"Shutting down {settings.APP_NAME}...")
+    await SharedClients.shutdown()
+    logger.info("Shared HTTP clients closed")
 
 
 app = FastAPI(
