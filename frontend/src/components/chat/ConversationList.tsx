@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, MessageSquare, Trash2, Sun, Moon, LogOut, User, PanelLeftClose } from 'lucide-react';
+import { Plus, MessageSquare, Trash2, Sun, Moon, LogOut, User, PanelLeftClose, Loader2 } from 'lucide-react';
 import type { ConversationListItem } from '../../types/chat';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
@@ -12,6 +12,7 @@ interface ConversationListProps {
   onDelete: (id: string) => void;
   onCloseSidebar?: () => void;
   isLoading?: boolean;
+  deletingId?: string | null;
 }
 
 // Sidebar Bottom Component - User info & Settings
@@ -66,6 +67,7 @@ export const ConversationList: React.FC<ConversationListProps> = ({
   onDelete,
   onCloseSidebar,
   isLoading = false,
+  deletingId = null,
 }) => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -140,24 +142,30 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                       <time dateTime={conv.updated_at}>{formatDate(conv.updated_at)}</time>
                     </p>
                   </div>
-                  <span
-                    role="button"
-                    tabIndex={0}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDelete(conv.id);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
+                  {deletingId === conv.id ? (
+                    <span className="p-1" aria-label="삭제 중">
+                      <Loader2 className="w-4 h-4 text-gray-500 dark:text-gray-400 animate-spin" aria-hidden="true" />
+                    </span>
+                  ) : (
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      onClick={(e) => {
                         e.stopPropagation();
                         onDelete(conv.id);
-                      }
-                    }}
-                    className="opacity-0 group-hover:opacity-100 focus:opacity-100 p-1 hover:bg-gray-300 dark:hover:bg-gray-600 rounded transition-all"
-                    aria-label={`${conv.title} 대화 삭제`}
-                  >
-                    <Trash2 className="w-4 h-4 text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400" aria-hidden="true" />
-                  </span>
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.stopPropagation();
+                          onDelete(conv.id);
+                        }
+                      }}
+                      className="opacity-0 group-hover:opacity-100 focus:opacity-100 p-1 hover:bg-gray-300 dark:hover:bg-gray-600 rounded transition-all"
+                      aria-label={`${conv.title} 대화 삭제`}
+                    >
+                      <Trash2 className="w-4 h-4 text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400" aria-hidden="true" />
+                    </span>
+                  )}
                 </button>
               </li>
             ))}

@@ -13,6 +13,7 @@ export const ChatContainer: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoadingConversations, setIsLoadingConversations] = useState(true);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
+  const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const {
@@ -103,6 +104,9 @@ export const ChatContainer: React.FC = () => {
 
   // Handle delete conversation
   const handleDeleteConversation = async (id: string) => {
+    if (isDeletingId) return; // Prevent multiple deletions
+
+    setIsDeletingId(id);
     try {
       await chatApi.deleteConversation(id);
       setConversations((prev) => prev.filter((c) => c.id !== id));
@@ -112,6 +116,8 @@ export const ChatContainer: React.FC = () => {
       }
     } catch (error) {
       console.error('Failed to delete conversation:', error);
+    } finally {
+      setIsDeletingId(null);
     }
   };
 
@@ -134,6 +140,7 @@ export const ChatContainer: React.FC = () => {
               onDelete={handleDeleteConversation}
               onCloseSidebar={() => setIsSidebarOpen(false)}
               isLoading={isLoadingConversations}
+              deletingId={isDeletingId}
             />
           </div>
         </div>
