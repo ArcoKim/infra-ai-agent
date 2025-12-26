@@ -15,7 +15,7 @@ export const MessageList = memo<MessageListProps>(function MessageList({
   streamingContent = '',
   streamingChartData = null,
   isStreaming = false,
-}) => {
+}) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const hasContent = messages.length > 0 || isStreaming;
 

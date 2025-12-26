@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import type { User, AuthState, LoginRequest, RegisterRequest } from '../types/auth';
+import type { AuthState, LoginRequest, RegisterRequest } from '../types/auth';
 import { authApi } from '../api/auth';
 import { setTokens, clearTokens, getAccessToken, getRefreshToken, isTokenExpired } from '../utils/token';
 
