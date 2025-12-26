@@ -62,4 +62,39 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy"}
+    """
+    Health check endpoint with database connectivity validation.
+    Returns 200 if all services are healthy, 503 otherwise.
+    """
+    from sqlalchemy import text
+    from app.core.database import MySQLSessionLocal, PostgresSessionLocal
+
+    health_status = {
+        "status": "healthy",
+        "services": {
+            "mysql": "healthy",
+            "postgres": "healthy",
+        }
+    }
+
+    # Check MySQL connection
+    try:
+        async with MySQLSessionLocal() as session:
+            await session.execute(text("SELECT 1"))
+    except Exception as e:
+        health_status["services"]["mysql"] = f"unhealthy: {str(e)}"
+        health_status["status"] = "unhealthy"
+
+    # Check PostgreSQL connection
+    try:
+        async with PostgresSessionLocal() as session:
+            await session.execute(text("SELECT 1"))
+    except Exception as e:
+        health_status["services"]["postgres"] = f"unhealthy: {str(e)}"
+        health_status["status"] = "unhealthy"
+
+    if health_status["status"] == "unhealthy":
+        from fastapi.responses import JSONResponse
+        return JSONResponse(status_code=503, content=health_status)
+
+    return health_status
