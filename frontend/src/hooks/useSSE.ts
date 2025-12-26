@@ -89,8 +89,8 @@ export const useSSE = (options: UseSSEOptions = {}) => {
             setIsStreaming(false);
             break;
         }
-      } catch (e) {
-        console.error('Error parsing SSE message:', e);
+      } catch (error) {
+        console.error('Error parsing SSE message:', error, 'Raw data:', event.data);
       }
     };
 

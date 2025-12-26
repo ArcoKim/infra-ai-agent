@@ -45,7 +45,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isAuthenticated: true,
         isLoading: false,
       });
-    } catch {
+    } catch (error) {
+      console.error('Failed to restore auth session:', error);
       clearTokens();
       setState(prev => ({ ...prev, isLoading: false }));
     }
@@ -82,8 +83,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     try {
       await authApi.logout();
-    } catch {
-      // Ignore logout errors
+    } catch (error) {
+      // Log but don't block logout on API failure
+      console.warn('Logout API call failed:', error);
     }
     clearTokens();
     setState({
