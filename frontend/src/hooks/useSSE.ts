@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import type { StreamChunk, ChartData } from '../types/chat';
 import { getAccessToken } from '../utils/token';
 
@@ -18,6 +18,12 @@ export const useSSE = (options: UseSSEOptions = {}) => {
   const [conversationId, setConversationId] = useState<string | null>(null);
   const eventSourceRef = useRef<EventSource | null>(null);
 
+  // Store options in ref to avoid dependency issues
+  const optionsRef = useRef(options);
+  useEffect(() => {
+    optionsRef.current = options;
+  }, [options]);
+
   const startStream = useCallback((message: string, existingConversationId?: string) => {
     // Close existing connection
     if (eventSourceRef.current) {
@@ -31,7 +37,7 @@ export const useSSE = (options: UseSSEOptions = {}) => {
 
     const token = getAccessToken();
     if (!token) {
-      options.onError?.('Not authenticated');
+      optionsRef.current.onError?.('Not authenticated');
       setIsStreaming(false);
       return;
     }
@@ -57,28 +63,28 @@ export const useSSE = (options: UseSSEOptions = {}) => {
           case 'content':
             if (chunk.content) {
               setStreamingContent(prev => prev + chunk.content);
-              options.onContent?.(chunk.content);
+              optionsRef.current.onContent?.(chunk.content);
             }
             break;
 
           case 'chart':
             if (chunk.chartData) {
               setChartData(chunk.chartData);
-              options.onChart?.(chunk.chartData);
+              optionsRef.current.onChart?.(chunk.chartData);
             }
             break;
 
           case 'done':
             if (chunk.conversationId) {
               setConversationId(chunk.conversationId);
-              options.onDone?.(chunk.conversationId);
+              optionsRef.current.onDone?.(chunk.conversationId);
             }
             eventSource.close();
             setIsStreaming(false);
             break;
 
           case 'error':
-            options.onError?.(chunk.error || 'Unknown error');
+            optionsRef.current.onError?.(chunk.error || 'Unknown error');
             eventSource.close();
             setIsStreaming(false);
             break;
@@ -91,9 +97,9 @@ export const useSSE = (options: UseSSEOptions = {}) => {
     eventSource.onerror = () => {
       eventSource.close();
       setIsStreaming(false);
-      options.onError?.('Connection lost');
+      optionsRef.current.onError?.('Connection lost');
     };
-  }, [options]);
+  }, []);
 
   const stopStream = useCallback(() => {
     if (eventSourceRef.current) {
