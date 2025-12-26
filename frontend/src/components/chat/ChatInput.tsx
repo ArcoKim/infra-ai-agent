@@ -48,7 +48,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   }, [message]);
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 p-4 transition-colors">
+    <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 p-4 transition-colors" role="form" aria-label="메시지 입력">
       <div className="flex items-end gap-3 max-w-4xl mx-auto">
         <textarea
           ref={textareaRef}
@@ -60,6 +60,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           rows={1}
           style={{ height: INPUT_HEIGHT }}
           className="flex-1 resize-none rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-4 leading-[42px] focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100 dark:disabled:bg-gray-600 disabled:cursor-not-allowed placeholder-gray-400 dark:placeholder-gray-500 transition-colors box-border"
+          aria-label="메시지 입력창"
+          aria-describedby="input-hint"
         />
 
         {isStreaming ? (
@@ -68,9 +70,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             onClick={onStop}
             style={{ height: INPUT_HEIGHT, width: INPUT_HEIGHT }}
             className="flex-shrink-0 flex items-center justify-center rounded-xl bg-red-500 text-white hover:bg-red-600 transition-colors"
-            title="중지"
+            aria-label="응답 생성 중지"
           >
-            <Square className="w-5 h-5 fill-current" />
+            <Square className="w-5 h-5 fill-current" aria-hidden="true" />
           </button>
         ) : (
           <button
@@ -78,14 +80,14 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             disabled={!message.trim() || disabled}
             style={{ height: INPUT_HEIGHT, width: INPUT_HEIGHT }}
             className="flex-shrink-0 flex items-center justify-center rounded-xl bg-primary-600 text-white hover:bg-primary-700 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors"
-            title="전송"
+            aria-label="메시지 전송"
           >
-            <Send className="w-5 h-5" />
+            <Send className="w-5 h-5" aria-hidden="true" />
           </button>
         )}
       </div>
 
-      <div className="text-center mt-2">
+      <div className="text-center mt-2" id="input-hint">
         <span className="text-xs text-gray-400 dark:text-gray-500">
           Enter로 전송, Shift+Enter로 줄바꿈
         </span>

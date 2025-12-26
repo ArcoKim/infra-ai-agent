@@ -25,20 +25,21 @@ export const SidebarBottom: React.FC = () => {
       <button
         onClick={toggleTheme}
         className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors mb-2"
+        aria-label={theme === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환'}
       >
         {theme === 'dark' ? (
-          <Sun className="w-5 h-5 text-yellow-500" />
+          <Sun className="w-5 h-5 text-yellow-500" aria-hidden="true" />
         ) : (
-          <Moon className="w-5 h-5 text-gray-600" />
+          <Moon className="w-5 h-5 text-gray-600" aria-hidden="true" />
         )}
         <span className="text-sm text-gray-900 dark:text-white">{theme === 'dark' ? '라이트 모드' : '다크 모드'}</span>
       </button>
 
       {/* User info */}
       {user && (
-        <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-800">
-          <div className="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center">
-            <User className="w-4 h-4 text-white" />
+        <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-800" role="region" aria-label="사용자 정보">
+          <div className="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center" role="img" aria-label="사용자 아바타">
+            <User className="w-4 h-4 text-white" aria-hidden="true" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium truncate text-gray-900 dark:text-white">{user.name}</p>
@@ -47,9 +48,9 @@ export const SidebarBottom: React.FC = () => {
           <button
             onClick={logout}
             className="p-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors"
-            title="로그아웃"
+            aria-label="로그아웃"
           >
-            <LogOut className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+            <LogOut className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" />
           </button>
         </div>
       )}
@@ -83,24 +84,25 @@ export const ConversationList: React.FC<ConversationListProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white transition-colors">
+    <nav className="flex flex-col h-full bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white transition-colors" aria-label="대화 목록">
       {/* Header */}
       <div className="p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-2 mb-3">
           <button
             onClick={onNew}
             className="flex-1 flex items-center gap-3 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
+            aria-label="새 대화 시작"
           >
-            <Plus className="w-5 h-5" />
+            <Plus className="w-5 h-5" aria-hidden="true" />
             <span>새 대화</span>
           </button>
           {onCloseSidebar && (
             <button
               onClick={onCloseSidebar}
               className="p-3 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
-              title="사이드바 닫기"
+              aria-label="사이드바 닫기"
             >
-              <PanelLeftClose className="w-5 h-5" />
+              <PanelLeftClose className="w-5 h-5" aria-hidden="true" />
             </button>
           )}
         </div>
@@ -118,37 +120,50 @@ export const ConversationList: React.FC<ConversationListProps> = ({
             <p className="text-sm">대화 기록이 없습니다</p>
           </div>
         ) : (
-          <div className="space-y-1">
+          <ul className="space-y-1" role="list">
             {conversations.map((conv) => (
-              <div
-                key={conv.id}
-                className={`group flex items-center gap-2 p-3 rounded-lg cursor-pointer transition-colors ${
-                  currentId === conv.id
-                    ? 'bg-gray-200 dark:bg-gray-700'
-                    : 'hover:bg-gray-200 dark:hover:bg-gray-800'
-                }`}
-                onClick={() => onSelect(conv.id)}
-              >
-                <MessageSquare className="w-4 h-4 flex-shrink-0 text-gray-500 dark:text-gray-400" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm truncate">{conv.title}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{formatDate(conv.updated_at)}</p>
-                </div>
+              <li key={conv.id}>
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDelete(conv.id);
-                  }}
-                  className="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-300 dark:hover:bg-gray-600 rounded transition-all"
-                  title="삭제"
+                  className={`group w-full flex items-center gap-2 p-3 rounded-lg cursor-pointer transition-colors text-left ${
+                    currentId === conv.id
+                      ? 'bg-gray-200 dark:bg-gray-700'
+                      : 'hover:bg-gray-200 dark:hover:bg-gray-800'
+                  }`}
+                  onClick={() => onSelect(conv.id)}
+                  aria-current={currentId === conv.id ? 'true' : undefined}
+                  aria-label={`대화: ${conv.title}`}
                 >
-                  <Trash2 className="w-4 h-4 text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400" />
+                  <MessageSquare className="w-4 h-4 flex-shrink-0 text-gray-500 dark:text-gray-400" aria-hidden="true" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm truncate">{conv.title}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <time dateTime={conv.updated_at}>{formatDate(conv.updated_at)}</time>
+                    </p>
+                  </div>
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete(conv.id);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.stopPropagation();
+                        onDelete(conv.id);
+                      }
+                    }}
+                    className="opacity-0 group-hover:opacity-100 focus:opacity-100 p-1 hover:bg-gray-300 dark:hover:bg-gray-600 rounded transition-all"
+                    aria-label={`${conv.title} 대화 삭제`}
+                  >
+                    <Trash2 className="w-4 h-4 text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400" aria-hidden="true" />
+                  </span>
                 </button>
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         )}
       </div>
-    </div>
+    </nav>
   );
 };
