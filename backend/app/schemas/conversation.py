@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from datetime import datetime
 from typing import List, Optional
 
@@ -10,36 +10,33 @@ class ConversationCreate(BaseModel):
 
 
 class ConversationResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
     user_id: str
     title: str
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
-
 
 class ConversationListItem(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
     title: str
     updated_at: datetime
     last_message: Optional[str] = None
 
-    class Config:
-        from_attributes = True
-
 
 class ConversationWithMessages(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
     user_id: str
     title: str
     created_at: datetime
     updated_at: datetime
     messages: List[MessageResponse]
-
-    class Config:
-        from_attributes = True
 
 
 class ConversationTitleUpdate(BaseModel):

@@ -1,6 +1,6 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from datetime import datetime
-from typing import Optional, Any, Literal
+from typing import Optional, Literal
 
 
 class ChatRequest(BaseModel):
@@ -9,15 +9,14 @@ class ChatRequest(BaseModel):
 
 
 class MessageResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
     conversation_id: str
     role: str
     content: str
     chart_data: Optional[dict] = None
     created_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 class ChatResponse(BaseModel):
