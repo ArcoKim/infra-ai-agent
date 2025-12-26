@@ -1,8 +1,8 @@
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List
 import httpx
-import json
 
 from app.core.config import settings
+from app.core.logging import logger
 
 
 class MCPClient:
@@ -22,7 +22,7 @@ class MCPClient:
             response.raise_for_status()
             return response.json()
         except httpx.HTTPError as e:
-            print(f"Error fetching MCP tools: {e}")
+            logger.error(f"Error fetching MCP tools: {e}")
             return self._get_default_tools()
 
     async def execute_tool(
