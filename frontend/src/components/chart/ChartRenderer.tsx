@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, memo } from 'react';
+import { useEffect, useRef, memo } from 'react';
 import * as echarts from 'echarts/core';
 import { LineChart, BarChart, ScatterChart, GaugeChart } from 'echarts/charts';
 import {

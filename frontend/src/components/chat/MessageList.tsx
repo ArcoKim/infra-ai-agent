@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, memo } from 'react';
+import { useRef, useEffect, memo } from 'react';
 import type { Message, ChartData } from '../../types/chat';
 import { MessageItem, StreamingMessage } from './MessageItem';
 import { TypingIndicator } from '../common/Loading';
