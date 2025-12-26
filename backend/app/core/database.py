@@ -55,8 +55,6 @@ async def get_mysql_session() -> AsyncGenerator[AsyncSession, None]:
         except Exception:
             await session.rollback()
             raise
-        finally:
-            await session.close()
 
 
 # Dependency for PostgreSQL session
@@ -68,5 +66,3 @@ async def get_postgres_session() -> AsyncGenerator[AsyncSession, None]:
         except Exception:
             await session.rollback()
             raise
-        finally:
-            await session.close()
