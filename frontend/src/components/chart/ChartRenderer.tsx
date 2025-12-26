@@ -41,32 +41,37 @@ export const ChartRenderer = memo<ChartRendererProps>(function ChartRenderer({
   const chartInstanceRef = useRef<echarts.ECharts | null>(null);
   const { theme } = useTheme();
 
+  // Initialize chart instance on mount and handle theme changes
   useEffect(() => {
     if (!chartRef.current) return;
-
-    // Dispose existing instance before creating new one
-    if (chartInstanceRef.current) {
-      chartInstanceRef.current.dispose();
-    }
 
     // Initialize chart with theme
     const chart = echarts.init(chartRef.current, theme === 'dark' ? 'dark' : undefined);
     chartInstanceRef.current = chart;
 
-    // Set options
-    chart.setOption(chartData.options as echarts.EChartsCoreOption);
-
     // Resize handler
     const handleResize = () => {
-      chart.resize();
+      if (chartInstanceRef.current && !chartInstanceRef.current.isDisposed()) {
+        chartInstanceRef.current.resize();
+      }
     };
     window.addEventListener('resize', handleResize);
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      chart.dispose();
+      if (chartInstanceRef.current && !chartInstanceRef.current.isDisposed()) {
+        chartInstanceRef.current.dispose();
+        chartInstanceRef.current = null;
+      }
     };
-  }, [chartData, theme]);
+  }, [theme]);
+
+  // Update chart options when chartData changes
+  useEffect(() => {
+    if (!chartInstanceRef.current || chartInstanceRef.current.isDisposed()) return;
+
+    chartInstanceRef.current.setOption(chartData.options as echarts.EChartsCoreOption, true);
+  }, [chartData]);
 
   return (
     <div
