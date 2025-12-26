@@ -7,6 +7,7 @@ import json
 from app.core.database import get_mysql_session
 from app.core.security import get_current_user_id, verify_token_from_query
 from app.services.chat_service import ChatService
+from app.schemas.chat import ChatRequest
 
 router = APIRouter()
 
@@ -75,28 +76,31 @@ async def stream_chat(
 
 @router.post("/send")
 async def send_message(
-    message: str = Query(..., min_length=1),
-    conversation_id: Optional[str] = Query(None),
+    request: ChatRequest,
     user_id: str = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_mysql_session)
 ):
     """
     Send a message and get full response (non-streaming fallback).
+
+    Request Body:
+        - message: User message (required)
+        - conversation_id: Optional conversation ID (creates new if not provided)
     """
     chat_service = ChatService(db)
 
     try:
         # Get or create conversation
-        conv_id = await chat_service.get_or_create_conversation(user_id, conversation_id)
+        conv_id = await chat_service.get_or_create_conversation(user_id, request.conversation_id)
 
         # Save user message
-        await chat_service.save_message(conv_id, "user", message)
+        await chat_service.save_message(conv_id, "user", request.message)
 
         # Collect full response
         full_response = ""
         chart_data = None
 
-        async for chunk in chat_service.stream_response(conv_id, message):
+        async for chunk in chat_service.stream_response(conv_id, request.message):
             if chunk["type"] == "content":
                 full_response += chunk["content"]
             elif chunk["type"] == "chart":
