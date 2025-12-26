@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, memo } from 'react';
 import type { Message, ChartData } from '../../types/chat';
 import { MessageItem, StreamingMessage } from './MessageItem';
 import { TypingIndicator } from '../common/Loading';
@@ -10,7 +10,7 @@ interface MessageListProps {
   isStreaming?: boolean;
 }
 
-export const MessageList: React.FC<MessageListProps> = ({
+export const MessageList = memo<MessageListProps>(function MessageList({
   messages,
   streamingContent = '',
   streamingChartData = null,
@@ -68,4 +68,4 @@ export const MessageList: React.FC<MessageListProps> = ({
       <div ref={messagesEndRef} />
     </div>
   );
-};
+});

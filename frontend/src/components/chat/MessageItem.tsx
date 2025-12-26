@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { User, Bot } from 'lucide-react';
 import type { Message, ChartData } from '../../types/chat';
@@ -9,7 +9,7 @@ interface MessageItemProps {
   isStreaming?: boolean;
 }
 
-export const MessageItem: React.FC<MessageItemProps> = ({ message, isStreaming = false }) => {
+export const MessageItem = memo<MessageItemProps>(function MessageItem({ message, isStreaming = false }) {
   const isUser = message.role === 'user';
 
   return (
@@ -70,14 +70,14 @@ export const MessageItem: React.FC<MessageItemProps> = ({ message, isStreaming =
       </div>
     </div>
   );
-};
+});
 
 interface StreamingMessageProps {
   content: string;
   chartData?: ChartData | null;
 }
 
-export const StreamingMessage: React.FC<StreamingMessageProps> = ({ content, chartData }) => {
+export const StreamingMessage = memo<StreamingMessageProps>(function StreamingMessage({ content, chartData }) {
   return (
     <div className="flex gap-4">
       {/* Avatar */}
@@ -109,4 +109,4 @@ export const StreamingMessage: React.FC<StreamingMessageProps> = ({ content, cha
       </div>
     </div>
   );
-};
+});
