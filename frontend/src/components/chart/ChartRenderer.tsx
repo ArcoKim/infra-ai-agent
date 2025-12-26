@@ -39,7 +39,13 @@ export const ChartRenderer = memo<ChartRendererProps>(function ChartRenderer({
 }) {
   const chartRef = useRef<HTMLDivElement>(null);
   const chartInstanceRef = useRef<echarts.ECharts | null>(null);
+  const chartDataRef = useRef(chartData);
   const { theme } = useTheme();
+
+  // Keep chartData ref updated
+  useEffect(() => {
+    chartDataRef.current = chartData;
+  }, [chartData]);
 
   // Initialize chart instance on mount and handle theme changes
   useEffect(() => {
@@ -48,6 +54,9 @@ export const ChartRenderer = memo<ChartRendererProps>(function ChartRenderer({
     // Initialize chart with theme
     const chart = echarts.init(chartRef.current, theme === 'dark' ? 'dark' : undefined);
     chartInstanceRef.current = chart;
+
+    // Set initial options
+    chart.setOption(chartDataRef.current.options as echarts.EChartsCoreOption, true);
 
     // Resize handler
     const handleResize = () => {
